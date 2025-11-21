@@ -1,7 +1,3 @@
-Harika, şimdi tüm bilgiler elimizde. README için tam olarak bir taslak hazırlayabiliriz. Senin verdiğin bilgilerle **Docker, environment ve diyagram placeholders** dahil edilecek şekilde şöyle bir yapı önerebilirim:
-
----
-
 # Notification Service
 
 A microservice-style notification system built with **GraphQL**, **RabbitMQ**, **Prisma**, and **Docker**.
@@ -43,49 +39,7 @@ This project was created to practice **GraphQL** and **RabbitMQ**, while maintai
 
 ## Design
 
-Mermaid flow diagram of the system:
-
-```mermaid
-flowchart LR
- subgraph APILayer["API Layer"]
-        Client["Client"]
-        API["/graphql Endpoint"]
-        Resolver["Notification Resolver"]
-        Unique["Assign Job ID"]
-  end
- subgraph Queues["Queues"]
-        EmailQueue["Email Queue"]
-        SMSQueue["SMS Queue"]
-  end
- subgraph Broker["RabbitMQ"]
-        Exchange(("RabbitMQ Exchange (direct)"))
-        Queues
-  end
- subgraph Worker["Consumer / Worker"]
-        EmailConsumer["Email Consumer"]
-        SMSConsumer["SMS Consumer"]
-        Idem{"Idempotency Check"}
-  end
- subgraph DBLayer["DBLayer"]
-        NotificationDB[("Notification Job Log")]
-  end
-    Client --> API
-    API --> Resolver
-    Resolver --> Unique
-    Unique --> Exchange
-    Exchange -- email --> EmailQueue
-    Exchange -- sms --> SMSQueue
-    EmailQueue --> EmailConsumer
-    SMSQueue --> SMSConsumer
-    EmailConsumer --> Idem
-    SMSConsumer --> Idem
-    Idem --> NotificationDB
-    Idem -- Already processed --> Skip["Skip Message"]
-    Idem -- Not processed --> Process["Process job (send notification)"]
-    Process -. ACK (keep log) .-> NotificationDB
-    Process -. Fail (NACK) .-> Retry["Retry(NACK + requeue)"]
-    Retry -. Max Retry Reached .-> DLQ("DLQ")
-```
+Here the diagram of the system:
 
 > ![Notification Flow Diagram](docs/Notification%20Engine%20Design.png)
 > (actual diagram image)
